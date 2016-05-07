@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/object88/bbrest/controllers"
 	"github.com/object88/bbrest/models"
+	"github.com/zenazn/goji/web"
+	"github.com/zenazn/goji/web/middleware"
 )
 
 // PhotoHandler class!
@@ -17,14 +18,20 @@ type PhotoHandler struct {
 }
 
 // AddPhotoHandler creates a new instance
-func AddPhotoHandler(pC *controllers.PhotoController, r *mux.Router) {
+func AddPhotoHandler(pC *controllers.PhotoController, parentMux *web.Mux) {
 	fmt.Printf("Adding photo router...\n")
 
 	pH := &PhotoHandler{Handler{}, pC}
 
-	r.HandleFunc("/photo", pH.Handle).Methods("GET")
-	r.HandleFunc("/photo/{id}", pH.HandleSingleGet).Methods("GET")
-	r.HandleFunc("/photo", pH.HandleCreate).Methods("POST")
+	mux := web.New()
+	parentMux.Handle("/photo/*", mux)
+	mux.Use(middleware.SubRouter)
+
+	mux.Get("/", pH.Handle)
+	mux.Get("/:id", pH.HandleSingleGet)
+	mux.Post("/", pH.HandleCreate)
+
+	parentMux.Get("/photo", http.RedirectHandler("/photo/", 301))
 
 	fmt.Printf("Added photo router...\n")
 }
@@ -47,9 +54,8 @@ func (pH *PhotoHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleSingleGet processes a request for a single photos.
-func (pH *PhotoHandler) HandleSingleGet(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
+func (pH *PhotoHandler) HandleSingleGet(c web.C, w http.ResponseWriter, r *http.Request) {
+	id := c.URLParams["id"]
 	fmt.Printf("Entered HandleSingleGet with id '%s'.\n", id)
 
 	p := pH.photoController.Get(id)

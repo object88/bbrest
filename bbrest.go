@@ -6,9 +6,9 @@ import (
 
 	"gopkg.in/mgo.v2"
 
-	"github.com/gorilla/mux"
 	"github.com/object88/bbrest/controllers"
 	"github.com/object88/bbrest/handlers"
+	"github.com/zenazn/goji/web"
 )
 
 func getSession() *mgo.Session {
@@ -25,12 +25,14 @@ func getSession() *mgo.Session {
 
 func main() {
 	fmt.Printf("Starting server...\n")
-	r := mux.NewRouter()
-
 	s := getSession()
 
-	pC := controllers.NewPhotoController(s, DatabaseName)
-	handlers.AddPhotoHandler(pC, r)
+	mux := web.New()
 
-	http.ListenAndServe(":8080", r)
+	pC := controllers.NewPhotoController(s, DatabaseName)
+	handlers.AddPhotoHandler(pC, mux)
+
+	handlers.AddMiscellaneousHandler(mux)
+
+	http.ListenAndServe(":8080", mux)
 }
