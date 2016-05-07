@@ -4,19 +4,22 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
+
+	"github.com/gorilla/mux"
+	"github.com/object88/bbrest/controllers"
+	"github.com/object88/bbrest/handlers"
 )
 
 func getSession() *mgo.Session {
 	s, err := mgo.Dial("127.0.0.1:27017/")
 
 	if err != nil {
-		fmt.Printf("Failed to create session to database: %s", err)
+		fmt.Printf("Failed to create session to database: %s\n", err)
 		panic(err)
 	}
 
-	fmt.Printf("Connected to mongo database\n")
+	fmt.Printf("Connected to mongo database.\n")
 	return s
 }
 
@@ -26,9 +29,8 @@ func main() {
 
 	s := getSession()
 
-	pC := NewPhotoController(s)
-	pR := PhotoRouter{}
-	pR.AddRouter(r, pC)
+	pC := controllers.NewPhotoController(s, DatabaseName)
+	handlers.AddPhotoHandler(pC, r)
 
 	http.ListenAndServe(":8080", r)
 }

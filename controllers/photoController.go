@@ -1,13 +1,15 @@
-package main
+package controllers
 
 import (
 	"fmt"
+
+	"github.com/object88/bbrest/models"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-const collectionName string = "photos"
+const photoCollectionName string = "photos"
 
 // PhotoController dictates CRUD operations
 type PhotoController struct {
@@ -15,12 +17,12 @@ type PhotoController struct {
 }
 
 // NewPhotoController instantiates a new instance of the controller
-func NewPhotoController(s *mgo.Session) *PhotoController {
-	return &PhotoController{Controller{s, collectionName}}
+func NewPhotoController(s *mgo.Session, databaseName string) *PhotoController {
+	return &PhotoController{Controller{s, photoCollectionName, databaseName}}
 }
 
 // Create accepts a Photo and places it in the repository
-func (pC *PhotoController) Create(p *Photo) *Photo {
+func (pC *PhotoController) Create(p *models.Photo) *models.Photo {
 	fmt.Printf("Inserting photo '%s' into repository...\n", p)
 
 	p.ID = bson.NewObjectId()
@@ -37,12 +39,12 @@ func (pC *PhotoController) Create(p *Photo) *Photo {
 }
 
 // Get returns a Photo with the matching id
-func (pC *PhotoController) Get(id string) *Photo {
+func (pC *PhotoController) Get(id string) *models.Photo {
 	oid := bson.ObjectIdHex(id)
 
 	fmt.Printf("Requesting photo with id '%s'...\n", id)
 
-	result := &Photo{}
+	result := &models.Photo{}
 	query := pC.GetCollection().FindId(oid)
 	err := query.One(result)
 	if err != nil {

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -6,29 +6,39 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/object88/bbrest/controllers"
+	"github.com/object88/bbrest/models"
 )
 
 // PhotoHandler class!
 type PhotoHandler struct {
 	Handler
-	photoController *PhotoController
+	photoController *controllers.PhotoController
 }
 
-// NewPhotoHandler creates a new instance
-func NewPhotoHandler(pC *PhotoController) *PhotoHandler {
-	return &PhotoHandler{Handler{}, pC}
+// AddPhotoHandler creates a new instance
+func AddPhotoHandler(pC *controllers.PhotoController, r *mux.Router) {
+	fmt.Printf("Adding photo router...\n")
+
+	pH := &PhotoHandler{Handler{}, pC}
+
+	r.HandleFunc("/photo", pH.Handle).Methods("GET")
+	r.HandleFunc("/photo/{id}", pH.HandleSingleGet).Methods("GET")
+	r.HandleFunc("/photo", pH.HandleCreate).Methods("POST")
+
+	fmt.Printf("Added photo router...\n")
 }
 
 // Handle processes a request for a set of photos.
 func (pH *PhotoHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Entered Handle")
+	fmt.Printf("Entered Handle\n")
 }
 
 // HandleCreate handles photo creation
 func (pH *PhotoHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Entered HandleCreate\n")
 
-	p := &Photo{}
+	p := &models.Photo{}
 	json.NewDecoder(r.Body).Decode(p)
 
 	pH.photoController.Create(p)
