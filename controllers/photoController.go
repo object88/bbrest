@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 
+	"github.com/object88/bbrest/dtos"
 	"github.com/object88/bbrest/models"
 
 	"gopkg.in/mgo.v2"
@@ -13,43 +14,64 @@ const photoCollectionName string = "photos"
 
 // PhotoController dictates CRUD operations
 type PhotoController struct {
-	Controller
+	BaseController
 }
 
 // NewPhotoController instantiates a new instance of the controller
 func NewPhotoController(s *mgo.Session, databaseName string) *PhotoController {
-	return &PhotoController{Controller{s, photoCollectionName, databaseName}}
+	return &PhotoController{BaseController{s, photoCollectionName, databaseName}}
 }
 
 // Create accepts a Photo and places it in the repository
-func (pC *PhotoController) Create(p *models.Photo) *models.Photo {
+func (pC *PhotoController) Create(p *dtos.Photo) *dtos.Photo {
 	fmt.Printf("Inserting photo '%s' into repository...\n", p)
 
-	p.ID = bson.NewObjectId()
+	photo := models.Photo{
+		ID:    bson.NewObjectId(),
+		Title: "This is a test",
+	}
 
-	err := pC.GetCollection().Insert(p)
+	photo.ID = bson.NewObjectId()
+
+	err := pC.GetCollection().Insert(photo)
 	if err != nil {
 		fmt.Printf("%s", err)
 		return nil
 	}
 
-	fmt.Printf("Inserted photo '%s' into repository.\n", p)
+	result := &dtos.Photo{
+		BaseDto:        dtos.BaseDto{ID: photo.ID},
+		OwnerID:        bson.NewObjectId(),
+		OwnerName:      "Bob Roberts",
+		Favorited:      false,
+		CameraSettings: nil,
+	}
 
-	return p
+	fmt.Printf("Inserted photo '%s' into repository.\n", result)
+
+	return result
 }
 
 // Get returns a Photo with the matching id
-func (pC *PhotoController) Get(id string) *models.Photo {
+func (pC *PhotoController) Get(id string) *dtos.Photo {
 	oid := bson.ObjectIdHex(id)
 
 	fmt.Printf("Requesting photo with id '%s'...\n", id)
 
-	result := &models.Photo{}
+	photo := &models.Photo{}
 	query := pC.GetCollection().FindId(oid)
-	err := query.One(result)
+	err := query.One(photo)
 	if err != nil {
 		fmt.Printf("%s", err)
 		return nil
+	}
+
+	result := &dtos.Photo{
+		BaseDto:        dtos.BaseDto{ID: photo.ID},
+		OwnerID:        bson.NewObjectId(),
+		OwnerName:      "Bob Roberts",
+		Favorited:      false,
+		CameraSettings: nil,
 	}
 
 	fmt.Printf("Request for photo with id '%s' complete.\n", id)

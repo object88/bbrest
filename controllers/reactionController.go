@@ -13,12 +13,12 @@ const reactionCollectionName string = "photos"
 
 // ReactionController dictates CRUD operations
 type ReactionController struct {
-	Controller
+	BaseController
 }
 
 // NewReactionController instantiates a new instance of the controller
 func NewReactionController(s *mgo.Session, databaseName string) *ReactionController {
-	return &ReactionController{Controller{s, reactionCollectionName, databaseName}}
+	return &ReactionController{BaseController{s, reactionCollectionName, databaseName}}
 }
 
 // Create accepts a Photo and places it in the repository

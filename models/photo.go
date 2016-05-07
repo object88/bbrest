@@ -6,7 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// Photo is unused.
+// Photo is used.
 type Photo struct {
 	Title  string        `json:"title" bson:"title"`
 	Author string        `json:"author" bson:"author"`

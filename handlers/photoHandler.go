@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/object88/bbrest/controllers"
-	"github.com/object88/bbrest/models"
+	"github.com/object88/bbrest/dtos"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
 )
@@ -45,7 +45,7 @@ func (pH *PhotoHandler) Handle(w http.ResponseWriter, r *http.Request) {
 func (pH *PhotoHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Entered HandleCreate\n")
 
-	p := &models.Photo{}
+	p := &dtos.Photo{}
 	json.NewDecoder(r.Body).Decode(p)
 
 	pH.photoController.Create(p)
