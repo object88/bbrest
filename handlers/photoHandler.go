@@ -14,11 +14,11 @@ import (
 // PhotoHandler class!
 type PhotoHandler struct {
 	Handler
-	photoController *controllers.PhotoController
+	controller controllers.Controller
 }
 
 // AddPhotoHandler creates a new instance
-func AddPhotoHandler(pC *controllers.PhotoController, parentMux *web.Mux) {
+func AddPhotoHandler(pC controllers.Controller, parentMux *web.Mux) {
 	fmt.Printf("Adding photo router...\n")
 
 	pH := &PhotoHandler{Handler{}, pC}
@@ -48,7 +48,7 @@ func (pH *PhotoHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	p := &dtos.Photo{}
 	json.NewDecoder(r.Body).Decode(p)
 
-	pH.photoController.Create(p)
+	pH.controller.Create(p)
 
 	pH.writeSuccessResponse(p, 201, w)
 }
@@ -58,7 +58,7 @@ func (pH *PhotoHandler) HandleSingleGet(c web.C, w http.ResponseWriter, r *http.
 	id := c.URLParams["id"]
 	fmt.Printf("Entered HandleSingleGet with id '%s'.\n", id)
 
-	p := pH.photoController.Get(id)
+	p := pH.controller.Get(id)
 
 	pH.writeSuccessResponse(p, 200, w)
 }
