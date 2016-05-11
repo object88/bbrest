@@ -14,14 +14,18 @@ import (
 // PhotoHandler class!
 type PhotoHandler struct {
 	Handler
-	controller controllers.Controller
+	photoController controllers.IPhotoController
+}
+
+// CreatePhotoHandler creates a new instance
+func CreatePhotoHandler(pC controllers.IPhotoController) *PhotoHandler {
+	pH := &PhotoHandler{Handler{}, pC}
+	return pH
 }
 
 // AddPhotoHandler creates a new instance
-func AddPhotoHandler(pC controllers.Controller, parentMux *web.Mux) {
+func (pH *PhotoHandler) AddPhotoHandler(parentMux *web.Mux) {
 	fmt.Printf("Adding photo router...\n")
-
-	pH := &PhotoHandler{Handler{}, pC}
 
 	mux := web.New()
 	parentMux.Handle("/photo/*", mux)
@@ -45,12 +49,13 @@ func (pH *PhotoHandler) Handle(w http.ResponseWriter, r *http.Request) {
 func (pH *PhotoHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Entered HandleCreate\n")
 
-	p := &dtos.Photo{}
-	json.NewDecoder(r.Body).Decode(p)
+	p := dtos.Photo{}
+	json.NewDecoder(r.Body).Decode(&p)
 
-	pH.controller.Create(p)
+	result := pH.photoController.Create(&p)
 
-	pH.writeSuccessResponse(p, 201, w)
+	uj, _ := json.Marshal(result)
+	pH.writeSuccessResponse(uj, 201, w)
 }
 
 // HandleSingleGet processes a request for a single photos.
@@ -58,7 +63,8 @@ func (pH *PhotoHandler) HandleSingleGet(c web.C, w http.ResponseWriter, r *http.
 	id := c.URLParams["id"]
 	fmt.Printf("Entered HandleSingleGet with id '%s'.\n", id)
 
-	p := pH.controller.Get(id)
+	p := pH.photoController.Get(id)
 
-	pH.writeSuccessResponse(p, 200, w)
+	uj, _ := json.Marshal(p)
+	pH.writeSuccessResponse(uj, 200, w)
 }

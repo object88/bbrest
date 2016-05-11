@@ -30,9 +30,10 @@ func main() {
 	mux := web.New()
 
 	pC := controllers.NewPhotoController(s, DatabaseName)
-	handlers.AddPhotoHandler(pC, mux)
+	pH := handlers.CreatePhotoHandler(pC)
+	pH.AddPhotoHandler(mux)
 
 	handlers.AddMiscellaneousHandler(mux)
 
-	http.ListenAndServe(":8080", mux)
+	http.ListenAndServe(":1337", mux)
 }

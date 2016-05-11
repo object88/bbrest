@@ -1,15 +1,12 @@
 package controllers
 
-import (
-	"github.com/object88/bbrest/dtos"
-	"gopkg.in/mgo.v2"
-)
+import "gopkg.in/mgo.v2"
 
-// Controller is ...
-type Controller interface {
-	Create(d *dtos.BaseDto) *dtos.BaseDto
-	Get(id string) *dtos.BaseDto
-}
+// // Controller is ...
+// type Controller interface {
+// 	Create(d *dtos.BaseDto) *dtos.BaseDto
+// 	Get(id string) *dtos.BaseDto
+// }
 
 // BaseController is...
 type BaseController struct {

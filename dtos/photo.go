@@ -2,6 +2,7 @@ package dtos
 
 import (
 	"encoding/json"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -13,6 +14,7 @@ type Photo struct {
 	OwnerName      string          `json:"ownerName"`
 	Favorited      bool            `json:"favorited"`
 	CameraSettings *CameraSettings `json:"cameraSettings"`
+	UploadedOn     time.Time       `json:"uploadedOn"`
 }
 
 // CameraSettings is used
