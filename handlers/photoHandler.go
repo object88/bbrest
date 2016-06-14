@@ -34,6 +34,7 @@ func (pH *PhotoHandler) AddPhotoHandler(parentMux *web.Mux) {
 	mux.Get("/", pH.Handle)
 	mux.Get("/:id", pH.HandleSingleGet)
 	mux.Post("/", pH.HandleCreate)
+	mux.Patch("/:id", pH.HandleModify)
 
 	parentMux.Get("/photo", http.RedirectHandler("/photo/", 301))
 
@@ -56,6 +57,25 @@ func (pH *PhotoHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 
 	uj, _ := json.Marshal(result)
 	pH.writeSuccessResponse(uj, 201, w)
+}
+
+// HandleModify ...
+func (pH *PhotoHandler) HandleModify(c web.C, w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Entered HandleModify\n")
+
+	id := c.URLParams["id"]
+
+	// p := dtos.Photo{}
+	// json.NewDecoder(r.Body).Decode(&p)
+
+	// r.Body
+
+	err := pH.photoController.Modify(id, "")
+	if err != nil {
+		// Failure!
+	}
+
+	pH.writeSuccessResponse(nil, 200, w)
 }
 
 // HandleSingleGet processes a request for a single photos.

@@ -37,6 +37,10 @@ func (m *MockPhotoController) Get(id string) *dtos.Photo {
 	return nil
 }
 
+func (m *MockPhotoController) Modify(id string, patch string) error {
+	return nil
+}
+
 func TestCreate(t *testing.T) {
 	Convey("Can create", t, func() {
 		m := &MockPhotoController{}
@@ -56,5 +60,11 @@ func TestCreate(t *testing.T) {
 		So(result.OwnerName, ShouldEqual, "Bob")
 
 		So(m.createCalled, ShouldEqual, true)
+	})
+}
+
+func TestModify(t *testing.T) {
+	Convey("Can modify", t, func() {
+
 	})
 }

@@ -3,14 +3,12 @@ package dtos
 import (
 	"encoding/json"
 	"time"
-
-	"gopkg.in/mgo.v2/bson"
 )
 
 // Photo is used.
 type Photo struct {
-	BaseDto
-	OwnerID        bson.ObjectId   `json:"ownerId"`
+	ID             string          `json:"id"`
+	OwnerID        string          `json:"ownerId"`
 	OwnerName      string          `json:"ownerName"`
 	Favorited      bool            `json:"favorited"`
 	CameraSettings *CameraSettings `json:"cameraSettings"`
